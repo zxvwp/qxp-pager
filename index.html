@@ -351,7 +351,7 @@ async function runBixDelivery() {
   if (!p.bix?.owned) return;
   const now = Date.now();
   const lastRun = p.bix.lastRunTime || 0;
-  const cooldown = 1 * 60 * 1000; // 24 jam dalam ms
+  const cooldown = 24 * 60 * 60 * 1000; // 24 jam dalam ms
   const nextRunTime = lastRun + cooldown;
   if (now < nextRunTime) {
     const remaining = Math.floor((nextRunTime - now) / 1000);
@@ -450,7 +450,7 @@ async function updateBixCountdown() {
 
   const lastRun = p.bix.lastRunTime || 0;
   const now = Date.now();
-  const cooldown = 1 * 60 * 1000;
+  const cooldown = 24 * 60 * 60 * 1000;
   const nextRunTime = lastRun + cooldown;
   const el = document.getElementById("mod-bix-body");
 
