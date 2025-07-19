@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black text-gray-300 font-mono">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="qxp-wxllet">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <title>qxp-wxllet (pager edition)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-black">
+
+  <!-- Peranti Pager -->
+  <div class="w-[340px] h-[200px] bg-black border-2 border-gray-500 rounded-md shadow-xl flex flex-col">
+    
+    <!-- Skrin Header -->
+    <div class="text-center text-sm font-bold border-b border-gray-700 p-1 tracking-widest uppercase">
+      qxp-wxllet (pager)
+    </div>
+
+    <!-- Skrin Kandungan Modul -->
+    <div id="screen" class="flex-1 overflow-y-auto text-xs p-2 space-y-3">
+
+<!-- Modul: home (signup/login) -->
+<section id="mod-home" class="hidden space-y-2">
+  <p class="text-center font-bold">welcome to qxp</p>
+  <div class="text-center text-xs space-y-2">
+  <div>
+    <input
+      id="signup-password"
+      type="password"
+      maxlength="6"
+      placeholder=">> password (max 6 digit)"
+      class="w-full bg-black text-gray-200 placeholder-gray-500 text-xs"/>
+    <button onclick="signup()" class="p-1">🚪 sign</button>
+    <button onclick="document.getElementById('fileLoaderHome').click()" class="p-1">📂 load</button>
+    <input id="fileLoaderHome" type="file" accept=".json" onchange="loadFileFromHome(event)" class="hidden" />
+  </div>
+</div>
+</section>
+
+      <!-- Modul: txg + dxc -->
+      <section id="mod-txg" class="hidden">
+        <p class="text-center font-bold">🪪 txg</p>
+        <div class="border p-2">
+          <p>txg   : <span id="txg-id">-</span></p>
+          <p>stxtus: approved</p>
+          <p>date  : 22.07.2025</p>
+        </div>
+        <p class="text-center font-bold">📄 dxc</p>
+        <div class="border p-2">
+          <p>txg : <span id="dxc-id">-</span></p>
+          <p>✍ e-king (000)</p>
+          <p>✍ rule by e-king (001)</p>
+        </div>
+      </section>
+
+      <!-- Modul: mxrket -->
+<section id="mod-mxrket" class="hidden">
+  <p class="text-center font-bold">🛒 mxrket</p>
+  <div class="border p-2 space-y-1">
+    <p>📟 pager – 500 cxzh 
+      <button onclick="buyItem('pager', 500)" class="ml-1 border px-1">📤</button>
+    </p>
+    <p>📦 box – 35 cxzh 
+      <button onclick="buyItem('box', 35)" class="ml-1 border px-1">📤</button>
+    </p>
+    <p>✉️ letter – 15 cxzh 
+      <button onclick="buyItem('letter', 15)" class="ml-1 border px-1">📤</button>
+    </p>
+  </div>
+  <!-- BIX ZONE -->
+  <div class="border p-2 mt-2 space-y-1">
+    <p class="font-bold text-center">🏢 bix</p>
+    <!-- Parcel untuk bix (jika sudah beli bix) -->
+    <p>📦 parcel small – 1 cxzh 
+      <button onclick="buyBixParcel('small', 1)" class="ml-1 border px-1">📤</button>
+    </p>
+    <p>📦 parcel medium – 3 cxzh 
+      <button onclick="buyBixParcel('medium', 3)" class="ml-1 border px-1">📤</button>
+    </p>
+    <p>📦 parcel big – 5 cxzh 
+      <button onclick="buyBixParcel('big', 5)" class="ml-1 border px-1">📤</button>
+    </p>
+<!-- Beli Bix (sekali sahaja) -->
+    <p>💼 Beli bix – 9999 cxzh 
+      <button onclick="buyBix()" class="ml-1 border px-1">📤</button>
+    </p>
+  </div>
+</section>
+
+      <!-- Modul: wxrk -->
+<section id="mod-wxrk" class="hidden">
+  <p class="text-center font-bold">🧰 wxrk</p>
+  <div class="border p-2 space-y-1">
+    <p>item: <span id="job-sizes">-</span></p>
+    <p>receiver: <span id="job-receiver">-</span></p>
+    <p>type: <span id="job-type">-</span></p>
+    <p>wage: <span id="job-wage">-</span></p>
+  </div>
+  <div class="flex justify-between gap-2 mt-2">
+    <button onclick="acceptJob()" class="flex-1 border px-2 py-0.5">✅ accept</button>
+    <button onclick="deliverJob()" class="flex-1 border px-2 py-0.5">📬 deliver</button>
+  </div>
+</section>
+
+      <!-- Modul: stxtus -->
+      <section id="mod-stxtus" class="hidden">
+        <p class="text-center font-bold">📊 stxtus</p>
+        <div class="border p-2">
+          <p>txg : <span id="txg-id">-</span></p>
+          <p>cxzh: <span id="cxzh-balance">-</span></p>
+          <p>level: <span id="level-display">1</span></p>
+          <p>job: <span id="total-job">0</span></p>
+<div class="w-full h-2 bg-gray-700 rounded overflow-hidden">
+  <div id="exp-bar" class="h-2 bg-green-400" style="width:0%"></div>
+</div>
+        </div>
+        <div class="border p-2 mt-2">
+          <p class="font-bold">🎒 bxg</p>
+          <ul id="inventory-list" class="text-xs list-disc pl-5 space-y-1"></ul>
+        </div>
+
+  <div class="grid grid-cols-2 text-[10px] border-t border-gray-700 text-center">
+    <button onclick="saveFile()" class="p-1">💾 save</button>
+    <button onclick="document.getElementById('fileLoader').click()" class="p-1">📂 load</button>
+    <input id="fileLoader" type="file" accept=".json" onchange="loadFile(event)" class="hidden" />
+  </div>
+      </section>
+
+      <!-- Modul: bix -->
+<section id="mod-bix" class="hidden">
+  <p class="text-center font-bold">🏢 bix</p>
+  <div id="mod-bix-body" class="text-xs space-y-2 p-2"></div>
+</section>
+
+    </div>
+
+    <!-- Navigasi Bawah -->
+    <div class="grid grid-cols-5 text-[10px] border-t border-gray-700 text-center">
+      <button onclick="showMod('mod-txg')" class="p-1">txg</button>
+      <button onclick="showMod('mod-mxrket')" class="p-1">mxrket</button>
+      <button onclick="showMod('mod-stxtus')" class="p-1">stxtus</button>
+      <button onclick="showMod('mod-wxrk')" class="p-1">wxrk</button>
+      <button onclick="showMod('mod-bix')" class="p-1">bix</button>
+    </div>
+
+  </div>
+
+  <!-- Skrip -->
+  <script>
+    const db = new Dexie("qxp-41-Database");
+    db.version(1).stores({ player: "id" });
+
+    async function initPlayer() {
+  let p = await db.player.get(1);
+  if (!p) {
+    showMod("mod-home");
+  } else {
+    updateUI();
+    showMod("mod-txg");
+  }
+}
+//=============signup============//
+async function signup() {
+  const password = document.getElementById("signup-password").value.trim();
+  if (!password || password.length > 6) return print("❌ Kata laluan tidak sah!");
+  const txg = String(Math.floor(3 + Math.random() * 997)).padStart(3, "0");
+  await db.player.put({
+  id: 1,
+  txg,
+  password,
+  cxzh: 0,
+  level: 1,
+  exp: 0,
+  totalJob: 0,
+  inventory: {},
+  bix: {
+  owned: false,
+  bixWallet: 0,
+  stxff: 0,
+  stxre: 0,
+  lastRunTime: 0,
+  inventory: {
+    "parcel-small": 0,
+    "parcel-medium": 0,
+    "parcel-big": 0
+  }
+}
+});
+  print("✅ Pendaftaran berjaya!");
+  await updateUI();
+  showMod("mod-txg");
+}
+//============= ui ===============//
+    async function updateUI() {
+      const p = await db.player.get(1);
+      if (!p) return;
+      document.querySelectorAll("#txg-id").forEach(el => el.textContent = p.txg);
+      document.querySelector("#dxc-id").textContent = p.txg;
+      document.querySelector("#cxzh-balance").textContent = p.cxzh;
+      document.querySelector("#exp-bar").style.width = `${Math.min((p.exp % 50), 100)}%`;
+      document.querySelector("#level-display").textContent = p.level;
+      document.querySelector("#total-job").textContent = p.totalJob || 0;
+      const list = document.getElementById("inventory-list");
+      list.innerHTML = "";
+      for (const [item, qty] of Object.entries(p.inventory || {})) {
+        const li = document.createElement("li");
+        li.textContent = `${item} x${qty}`;
+        list.appendChild(li);
+      }
+    }
+//===========buy===========//
+    async function buyItem(item, price) {
+      const p = await db.player.get(1);
+      if (p.cxzh < price) return print("❌ Tak cukup cxzh nak beli item!");
+      p.cxzh -= price;
+      p.inventory[item] = (p.inventory[item] || 0) + 1;
+      await db.player.put(p);
+      updateUI();
+      print(`✅ Beli ${item}`);
+    }
+//================ exp ===================//
+async function gainExp(amount) {
+  const p = await db.player.get(1);
+  if (!p) return;
+  if (p.level >= 999) return; // Maks level
+  p.exp += amount;
+  while (p.exp >= 100 && p.level < 999) {
+    p.exp -= 100;
+    p.level++;
+    print(`🌟 Tahniah! Level meningkat ke ${p.level}`);
+  }
+  await db.player.put(p);
+  updateUI();
+}
+//=============acceptjob + deliverjob============//
+    async function acceptJob() {
+  const p = await db.player.get(1);
+  // Sekat jika masih ada tugasan belum selesai
+  if (p.activeJob) {
+    print("❌ Kamu ada tugasan belum disiapkan!");
+    return;
+  }
+  const types = ["normal", "urgent"];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const sizes = ["small", "medium", "big"];
+  const size = sizes[Math.floor(Math.random() * sizes.length)];
+  const item = `parcel-${size}`;
+  const receiver = String(Math.floor(3 + Math.random() * 997)).padStart(3, "0");
+  // Tetapkan harga item ikut saiz
+  const itemPrices = {
+    small: 2,
+    medium: 6,
+    big: 10
+  };
+  // Kira gaji sebagai 50% dari harga item
+  const wage = itemPrices[size] * 0.5;
+  // Simpan tugasan baru
+  p.inventory[item] = (p.inventory[item] || 0) + 1;
+  p.activeJob = {
+    item,
+    receiver,
+    type,
+    wage
+  };
+  await db.player.put(p);
+  // Update UI
+  document.getElementById("job-sizes").textContent = size;
+  document.getElementById("job-type").textContent = type;
+  document.getElementById("job-wage").textContent = wage + " cxzh";
+  document.getElementById("job-receiver").textContent = receiver;
+  print(`📨 Tugasan diterima! Item: ${item}, hantar ke ${receiver}`);
+  updateUI();
+}
+
+async function deliverJob() {
+  const p = await db.player.get(1);
+  const job = p.activeJob;
+  if (!job) return print("❌ Tiada tugasan aktif!");
+  const { item, receiver, wage } = job;
+  if (!p.inventory[item] || p.inventory[item] <= 0) {
+    return print(`❌ Kamu tiada ${item} untuk dihantar.`);
+  }
+  // Simulasi penghantaran berjaya
+  p.inventory[item]--;
+  if (p.inventory[item] <= 0) delete p.inventory[item];
+  p.cxzh += wage;
+  p.totalJob = (p.totalJob || 0) + 1;
+  delete p.activeJob; // Kosongkan job
+  await db.player.put(p);
+  updateUI();
+  // Reset UI wxrk
+  document.getElementById("job-sizes").textContent = "-";
+  document.getElementById("job-type").textContent = "-";
+  document.getElementById("job-wage").textContent = "-";
+  document.getElementById("job-receiver").textContent = "-";
+  print(`📬 ${item} berjaya dihantar ke txg ${receiver}. Gaji: ${wage} cxzh`);
+ const expGain = Math.floor(1 + Math.random() * 2); 
+  print(`🧬 Dapat ${expGain} EXP`);
+await gainExp(expGain);
+  showMod("mod-wxrk");
+}
+//=========== bix ================//
+// BELI BIX DI MXRKET (one-time)
+async function buyBix() {
+  const p = await db.player.get(1);
+  if (p.cxzh < 9999) return print("🚫 Tak cukup cxzh untuk beli bix!");
+  if (p.bix?.owned) return print("🚫 Kamu sudah memiliki bix!");
+  p.cxzh -= 9999; // Tolak duit
+  p.bix = {
+    owned: true,
+    bixWallet: 0,
+    stxff: 1,
+    stxre: 1000,
+    inventory: {
+      "parcel-small": 0,
+      "parcel-medium": 0,
+      "parcel-big": 0
+    }
+  };
+  await db.player.put(p);
+  print("💲 bix dibeli dan unlocked!");
+  updateUI();
+}
+// BELI PARCEL BIX (hanya jika ada bix & ikut limit stxre)
+async function buyBixParcel(type, price) {
+  const p = await db.player.get(1);
+  if (!p.bix?.owned) return print("🚫 Kamu belum ada bix!");
+  const totalStock = Object.values(p.bix.inventory).reduce((a, b) => a + b, 0);
+  if (totalStock >= p.bix.stxre) return print("🚫 Stok penuh di stxre!");
+  if (p.cxzh < price) return print("🚫 Tak cukup cxzh untuk beli item!");
+  const key = `parcel-${type}`;
+  p.cxzh -= price;
+  p.bix.inventory[key] = (p.bix.inventory[key] || 0) + 1;
+  await db.player.put(p);
+  print(`💲 parcel ${type} dibeli ke stxre`);
+  updateUI();
+}
+// SISTEM DELIVER OLEH STXFF (1% dari total setiap parcel)
+async function runBixDelivery() {
+  const p = await db.player.get(1);
+  if (!p.bix?.owned) return;
+  const now = Date.now();
+  const lastRun = p.bix.lastRunTime || 0;
+  const cooldown = 1 * 60 * 1000; // 24 jam dalam ms
+  const nextRunTime = lastRun + cooldown;
+  if (now < nextRunTime) {
+    const remaining = Math.floor((nextRunTime - now) / 1000);
+    print(`⏳ Tunggu ${remaining}s untuk run seterusnya.`);
+    return;
+  }
+  const wagePerStxff = 5;
+  let delivered = 0;
+  let profit = 0;
+  const percent = Math.min(p.bix.stxff, 100);
+  for (const [key, count] of Object.entries(p.bix.inventory)) {
+    const size = key.split("-")[1];
+    const unitPrice = size === "small" ? 2 : size === "medium" ? 6 : 10;
+    const deliverAmt = Math.floor(count * (percent / 100));
+    p.bix.inventory[key] -= deliverAmt;
+    delivered += deliverAmt;
+    profit += deliverAmt * unitPrice;
+  }
+  const totalWage = p.bix.stxff * wagePerStxff;
+  const finalProfit = Math.max(0, profit - totalWage);
+  p.bix.bixWallet += finalProfit;
+  p.bix.lastRunTime = now;
+  await db.player.put(p);
+  print(`📦 stxff deliver ${delivered} parcel, profit: ${finalProfit} cxzh`);
+  updateUI();
+  updateBixCountdown(); // untuk update UI countdown
+}
+// WITHDRAW DARI bix-wxllet KE cxzh wallet
+async function withdrawBixProfit() {
+  const p = await db.player.get(1);
+  if (!p.bix?.owned || p.bix.bixWallet <= 0) return print("🚫 Tiada profit untuk withdraw!");
+  p.cxzh += p.bix.bixWallet;
+  print(`💲 Withdraw ${p.bix.bixWallet} cxzh ke dompet`);
+  p.bix.bixWallet = 0;
+  await db.player.put(p);
+  updateUI();
+}
+// UPGRADE STXRE
+async function upgradeStxre() {
+  const p = await db.player.get(1);
+  if (p.cxzh < 3500) return print("🚫 Tak cukup cxzh untuk upgrade stxre!");
+  p.cxzh -= 3500;
+  p.bix.stxre += 300;
+  print("🏗️ Stxre ditingkatkan +300");
+  await db.player.put(p);
+  updateUI();
+}
+// UPGRADE STXFF
+async function upgradeStxff() {
+  const p = await db.player.get(1);
+  if (p.cxzh < 1300) return print("🚫 Tak cukup cxzh untuk upgrade stxff!");
+  if (p.bix.stxff >= 100) return print("🚫 Dah capai max stxff (100%)!");
+  p.cxzh -= 1300;
+  p.bix.stxff += 1;
+  print("🧑‍💼 Tambah 1 stxff (+" + p.bix.stxff + "%)");
+  await db.player.put(p);
+  updateUI();
+}
+//LOAD BIX UI
+async function loadBixUI() {
+  const p = await db.player.get(1);
+  const el = document.getElementById("mod-bix-body");
+  if (!p.bix?.owned) {
+    el.innerHTML = "<p class='text-center'>🚧 renovate 🚧</p>";
+    return;
+  }
+  const { bixWallet, stxff, stxre, inventory } = p.bix;
+  const totalStock = Object.values(inventory).reduce((a, b) => a + b, 0);
+  // Senarai stok
+  let stockList = "<ul class='list-disc pl-5 space-y-1'>";
+  for (const [key, qty] of Object.entries(inventory)) {
+    stockList += `<li>${key} x${qty}</li>`;
+  }
+  stockList += "</ul>";
+  el.innerHTML = `
+    <p>bix-wxllet: <span class="text-cyan-300">${bixWallet}</span> cxzh</p>
+    <p>stxff: ${stxff}% 
+      <button onclick="upgradeStxff()" class="border px-1 ml-1">➕</button>
+    </p>
+    <p>stxre: ${totalStock}/${stxre} 
+      <button onclick="upgradeStxre()" class="border px-1 ml-1">➕</button>
+    </p>
+    <div class="border p-2 rounded bg-gray-900 mt-2">
+      <p class="font-bold mb-1">📦 stok stxre:</p>
+      ${stockList}
+    </div>
+    <button onclick="runBixDelivery()" class="border w-full py-0.5 mt-2">🚚 Run Delivery</button>
+    <button onclick="withdrawBixProfit()" class="border w-full py-0.5">💵 Withdraw</button>
+  `;
+  updateBixCountdown();
+}
+// UPDATE BIX COUNTDOWN 
+async function updateBixCountdown() {
+  const p = await db.player.get(1);
+  if (!p.bix?.owned) return;
+
+  const lastRun = p.bix.lastRunTime || 0;
+  const now = Date.now();
+  const cooldown = 1 * 60 * 1000;
+  const nextRunTime = lastRun + cooldown;
+  const el = document.getElementById("mod-bix-body");
+
+  let timerEl = document.getElementById("bix-timer");
+  if (!timerEl) {
+    timerEl = document.createElement("p");
+    timerEl.id = "bix-timer";
+    el.appendChild(timerEl);
+  }
+  function updateTimer() {
+    const remaining = Math.max(0, Math.floor((nextRunTime - Date.now()) / 1000));
+    if (remaining > 0) {
+      timerEl.textContent = `⏳ stxff bekerja. Cooldown: ${remaining}s`;
+      setTimeout(updateTimer, 1000);
+    } else {
+      timerEl.textContent = "🧑‍💼 stxff boleh bekerja semula.";
+    }
+  }
+
+  updateTimer();
+}
+//==============save =============//
+async function saveFile() {
+  const p = await db.player.get(1);
+  if (!p) return print("❗ Tiada data untuk disimpan!");
+  const json = JSON.stringify(p, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `qxp-wxllet-${p.txg}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  print("✔️ Data disimpan ke fail.");
+}
+function loadFile(event) {
+  const file = event.target.files[0];
+  if (!file) return print("❗ Tiada fail dipilih.");
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || typeof data !== "object" || !data.txg) {
+        return print("❗ Fail tidak sah!");
+      }
+      await db.player.put(data);
+      print("✔️ Data dimuat semula dari fail!");
+      updateUI();
+    } catch (err) {
+      print("❗ Ralat semasa baca fail.");
+    }
+  };
+  reader.readAsText(file);
+showMod("mod-txg");
+}
+//============utils=============//
+    function showMod(id) {
+      document.querySelectorAll("#screen > section").forEach(sec => sec.classList.add("hidden"));        document.getElementById(id).classList.remove("hidden");
+    if (id === "mod-bix") loadBixUI();
+}
+
+    function print(msg) {
+  const activeMod = [...document.querySelectorAll("#screen > section")]
+    .find(sec => !sec.classList.contains("hidden"));
+  if (!activeMod) return;
+  // Kumpulan emoji untuk setiap warna
+  const colorMap = {
+    "text-red-500": ["❌", "🚫", "⏳", "❗"],
+    "text-cyan-400": ["✅", "📦", "📬", "✔️"],
+    "text-neon-400": ["💲", "📨"],
+    "text-purple-400": ["🧬", "🧑‍💼", "🏗️", "🌟"]
+  };
+  let color = "text-gray-300"; // default
+  for (const [c, emojiList] of Object.entries(colorMap)) {
+    if (emojiList.some(e => msg.includes(e))) {
+      color = c;
+      break;
+    }
+  }
+  const line = document.createElement("p");
+  line.className = `${color} text-[10px] transition-opacity duration-500`;
+  line.textContent = `> ${msg}`;
+  activeMod.appendChild(line);
+  activeMod.scrollTop = activeMod.scrollHeight;
+  setTimeout(() => {
+    line.classList.add("opacity-0");
+    setTimeout(() => line.remove(), 500);
+  }, 5000);
+}
+
+    window.onload = () => {
+      initPlayer();
+      showMod('mod-txg');
+setInterval(() => {
+  updateUI();            // Update info wallet, level, inventory
+  updateBixCountdown();  // Update countdown mod-bix
+}, 1000); // Setiap 1 saat
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("serviceWorker.js")
+      .then(() => console.log("✔️ Service Worker registered"))
+      .catch(err => console.error("❗ SW registration failed", err));
+  });
+}
+
+    };
+  </script>
+</body>
+</html>
