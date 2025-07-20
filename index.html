@@ -234,8 +234,11 @@ async function gainExp(amount) {
   if (!p) return;
   if (p.level >= 999) return; // Maks level
   p.exp += amount;
-  while (p.exp >= 100 && p.level < 999) {
-    p.exp -= 100;
+  while (p.level < 999) {
+    // EXP yang diperlukan untuk naik level semasa
+    const requiredExp = Math.floor(100 * Math.pow(1.05, p.level - 1));
+    if (p.exp < requiredExp) break;
+    p.exp -= requiredExp;
     p.level++;
     print(`🌟 Tahniah! Level meningkat ke ${p.level}`);
   }
