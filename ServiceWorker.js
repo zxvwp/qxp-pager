@@ -1,4 +1,4 @@
-const CACHE_NAME = "qxp-cache-v3";
+const CACHE_NAME = "qxp-cache-v2";
 const urlsToCache = [
   "./",
   "./index.html",
